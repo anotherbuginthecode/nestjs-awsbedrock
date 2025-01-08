@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AiService } from './ai.service';
+import { ChatService } from './chat.service';
 import { NewMessageDto } from './dto/new-message.dto';
+import { AwsbedrockService } from '@modules/awsbedrock/awsbedrock.service';
 
-describe('AiService', () => {
-  let service: AiService;
+describe('ChatService', () => {
+  let service: ChatService;
 
-  const mockAIService = {
+  const mockChatService = {
     chat: jest.fn().mockImplementation((newMessage: NewMessageDto) => {
       return {
         model: newMessage.model,
@@ -14,12 +15,21 @@ describe('AiService', () => {
     }),
   };
 
+  const mockAwsbedrockService = {
+    invoke: jest.fn().mockImplementation(() => {
+      return {
+        model: 'amazon.titan-text-lite-v1',
+        answer: 'Hello',
+      };
+    }),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [{ provide: AiService, useValue: mockAIService }],
+      providers: [{ provide: ChatService, useValue: mockChatService }, { provide: AwsbedrockService, useValue: mockAwsbedrockService }],
     }).compile();
 
-    service = module.get<AiService>(AiService);
+    service = module.get<ChatService>(ChatService);
   });
 
   it('should be defined', () => {
