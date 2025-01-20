@@ -7,15 +7,15 @@ const { AWS_REGION, AWS_PROFILE } = process.env;
 
 const guardrailConfig: CreateGuardrailRequest = {
   name: "social-media-guardrail",
-  description: "Guardrails for redact confidential information",
+  description: "Guardrails to moderate comments on social media",
   blockedInputMessaging: "This input contains confidential information or inappropriate language",
   blockedOutputsMessaging: "This output contains confidential information or inappropriate language",
   sensitiveInformationPolicyConfig: {
     piiEntitiesConfig: [
-      {type: "EMAIL", action: "ANONYMIZE"},
-      {type: "PHONE", action: "ANONYMIZE"},
-      {type: "ADDRESS", action: "ANONYMIZE"},
-      {type: "NAME", action: "ANONYMIZE"}
+      {type: "EMAIL", action: "BLOCK"},
+      {type: "PHONE", action: "BLOCK"},
+      {type: "ADDRESS", action: "BLOCK"},
+      {type: "NAME", action: "BLOCK"}
     ]
   },
   topicPolicyConfig: { 
@@ -127,8 +127,8 @@ npx tsx create-guardrails.ts  // Run the script
     totalRetryDelay: 0
   },
   createdAt: 2025-01-19T18:38:57.817Z,
-  guardrailArn: 'arn:aws:bedrock:{AWS_REGION}:{AWS_ACCOUNT}:guardrail/xm65ikbb3if6',
-  guardrailId: 'xm65ikbb3if6',
+  guardrailArn: 'arn:aws:bedrock:{AWS_REGION}:{AWS_ACCOUNT}:guardrail/{GUARDRAIL_IDENTIFIER}',
+  guardrailId: '{GUARDRAIL_IDENTIFIER}',
   version: 'DRAFT'
 }
   

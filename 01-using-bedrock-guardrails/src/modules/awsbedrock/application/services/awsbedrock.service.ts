@@ -3,9 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import {
   BedrockRuntimeClient,
   InvokeModelCommand,
+  ApplyGuardrailRequest,
+  ApplyGuardrailCommand
 } from '@aws-sdk/client-bedrock-runtime';
-import { IBedrockResponse } from '@modules/awsbedrock/domain/interfaces/bedrock-response.interface';
-import { IBedrockInput } from '@modules/awsbedrock/domain/interfaces/bedrock-input.interface';
 
 @Injectable()
 export class AwsbedrockService {
@@ -29,26 +29,14 @@ export class AwsbedrockService {
     }
   }
 
-  async invoke(prompt: IBedrockInput): Promise<IBedrockResponse> {
-    
-
-    const systemPrompt = 'Detect and flag any personally identifiable information (PII) in the user comments.\nDetect and flag any rude or inappropriate language in the user comments.';
-    const command = new InvokeModelCommand({
-      modelId: this.configService.get<string>('MODEL_ID'),
+  async apply_guardrail(message: string): Promise<any> {
+    const input: ApplyGuardrailRequest = {
       guardrailIdentifier: this.configService.get<string>('GUARDRAIL_IDENTIFIER'),
       guardrailVersion: this.configService.get<string>('GUARDRAIL_VERSION') || 'DRAFT',
-      contentType: 'application/json',
-      accept: 'application/json',
-      body: JSON.stringify({
-        inputText: "System: " + systemPrompt + "\nUser: " + prompt.message,
-      }),
-    });
-
-    const response = await this.client.send(command);
-    const decodedResponseBody: IBedrockResponse = JSON.parse(
-      new TextDecoder().decode(response.body),
-    );
-
-    return  decodedResponseBody
+      source: 'INPUT',
+      content: [{text: {text: message}}],
+    }
+    const command = new ApplyGuardrailCommand(input);
+    return await this.client.send(command);
   }
 }

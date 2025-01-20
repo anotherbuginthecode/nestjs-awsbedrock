@@ -9,7 +9,7 @@ export class CommentsController {
 
   @Post('')
   @HttpCode(200)
-  async create(@Body() newMessage: MessageDto): Promise<Comment> {
+  async create(@Body() newMessage: MessageDto): Promise<any> {
     return await this.CommentsService.create(newMessage);
   }
 }
